@@ -1,12 +1,12 @@
-# kraken-invest
+# crypto-invest
 
-This repository contains investment strategy bots that use the [Kraken](https://www.kraken.com) cryptocurrency exchange.
+This repository contains investment strategy bots for multiple cryptocurrency exchange.
 
 
 ## Currently implemented
 
-- [Asset Cost Averaging](./packages/asset-cost-averaging/) (a bot to periodically invest a fix amount)
-- [Market Cap Weighting](./packages/market-cap-weighting/) (a bot to periodically invest a fix amount in multiple assets depending on the market capitalization)
+- [Kraken Asset Cost Averaging](./packages/kraken-asset-cost-averaging/) (a bot to periodically invest a fix amount via the [Kraken](https://www.kraken.com) exchange)
+- [Kraken Market Cap Weighting](./packages/kraken-market-cap-weighting/) (a bot to periodically invest a fix amount in multiple assets depending on the market capitalization via the [Kraken](https://www.kraken.com) exchange)
 
 
 ## Liability

@@ -1,4 +1,4 @@
-# Asset Cost Averaging
+# Kraken Asset Cost Averaging
 
 The Asset Cost Averaging Bot aims to implement the [Dollar Cost Averaging](https://www.investopedia.com/terms/d/dollarcostaveraging.asp) investment strategy, with the difference that it supports [all available trading pairs](https://support.kraken.com/hc/en-us/articles/202944246-All-available-currencies-and-trading-pairs-on-Kraken) that Kraken offers.
 

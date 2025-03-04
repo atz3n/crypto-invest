@@ -10,26 +10,32 @@ on:
 jobs:
   test-project:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.project_dir }}
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2 
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Install dependencies
         run: |
-          cd ./${{ inputs.project_dir }}
           yarn install
     
       - name: Lint project
         run: |
-          cd ./${{ inputs.project_dir }}
           yarn lint
 
       - name: Run tests
         run: |
-          cd ./${{ inputs.project_dir }}
           yarn test
+        
+      - name: Build package
+        run: |
+          yarn build
+  

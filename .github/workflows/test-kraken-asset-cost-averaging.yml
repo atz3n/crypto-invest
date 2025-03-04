@@ -1,0 +1,16 @@
+name: test kraken-asset-cost-averaging project
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - packages/kraken-asset-cost-averaging/**
+
+jobs:
+  test-asset-cost-averaging:
+    uses: ./.github/workflows/zz_test-project.yml
+    secrets: inherit
+    with:
+      project_dir: packages/kraken-asset-cost-averaging

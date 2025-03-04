@@ -1,6 +1,6 @@
-# Market Cap Weighting
+# Kraken Market Cap Weighting
 
-The Market Cap Weighting Bot is an extended version of the [Asset Cost Averaging](../asset-cost-averaging/README.md) bot. It lets you buy multiple assets weighted by the market capitalization.
+The Market Cap Weighting Bot is an extended version of the [Asset Cost Averaging](../kraken-asset-cost-averaging/README.md) bot. It lets you buy multiple assets weighted by the market capitalization.
 
 
 ## General
