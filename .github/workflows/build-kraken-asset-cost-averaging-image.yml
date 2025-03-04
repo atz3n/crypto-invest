@@ -6,11 +6,6 @@ on:
       version:
         description: Docker image version tag
         required: false
-  push:
-    branches:
-      - main
-    paths:
-      - packages/kraken-asset-cost-averaging/**
 
 jobs:
   test:
