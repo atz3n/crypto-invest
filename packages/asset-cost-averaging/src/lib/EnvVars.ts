@@ -12,8 +12,9 @@ export class EnvVars {
     private static isInitialized = false;
 
     public static RUN_CONTEXT = RUN_CONTEXT.PRODUCTION;
-    public static KRAKEN_PRIVATE_KEY = "";
-    public static KRAKEN_API_KEY = "";
+    public static EXCHANGE = "";
+    public static PRIVATE_KEY = "";
+    public static API_KEY = "";
     public static QUOTE_SYMBOL = "";
     public static BASE_SYMBOL = "";
     public static QUOTE_INVESTING_AMOUNT = 0;
@@ -35,11 +36,18 @@ export class EnvVars {
 
         this.set_RUN_CONTEXT();
 
-        this.setVar("KRAKEN_PRIVATE_KEY", (envVar) => {
-            this.KRAKEN_PRIVATE_KEY = String(envVar);
+        this.setVar("EXCHANGE", (enVar) => {
+            this.EXCHANGE = String(enVar).toLowerCase();
+            if (this.EXCHANGE !== "kraken" && this.EXCHANGE !== "binance") {
+                throw Error("Exchange not supported");
+            }
+        }, "kraken");
+
+        this.setVar("PRIVATE_KEY", (envVar) => {
+            this.PRIVATE_KEY = String(envVar);
         });
-        this.setVar("KRAKEN_API_KEY", (envVar) => {
-            this.KRAKEN_API_KEY = String(envVar);
+        this.setVar("API_KEY", (envVar) => {
+            this.API_KEY = String(envVar);
         });
         this.setVar("QUOTE_SYMBOL", (envVar) => {
             this.QUOTE_SYMBOL = String(envVar);

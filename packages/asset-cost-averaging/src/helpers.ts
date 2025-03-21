@@ -1,6 +1,7 @@
-import { IKraken, logger } from "@atz3n/kraken-invest-common";
+import { logger } from "@atz3n/kraken-invest-common";
 import { ScheduledTask } from "node-cron";
 import { EnvVars } from "./lib/EnvVars";
+import { IExchange } from "./exchange/IExchange";
 import { IStateStore, State } from "./storage/state/IStateStore";
 import { withdraw } from "./utils/funding";
 import { buy } from "./utils/trading";
@@ -21,12 +22,12 @@ export async function initStateStore(stateStore: IStateStore): Promise<void> {
 }
 
 
-export async function buyConditionally(kraken: IKraken, stateStore: IStateStore): Promise<void> {
+export async function buyConditionally(exchange: IExchange, stateStore: IStateStore): Promise<void> {
     try {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         let state = (await stateStore.get())!;
         if (EnvVars.NUMBER_OF_BUYS <= 0 || state.counter < EnvVars.NUMBER_OF_BUYS) {
-            state = await buyAction(kraken, state);
+            state = await buyAction(exchange, state);
             await stateStore.upsert(state);
         }
     } catch (error) {
@@ -34,9 +35,9 @@ export async function buyConditionally(kraken: IKraken, stateStore: IStateStore)
     }
 }
 
-async function buyAction(kraken: IKraken, state: State): Promise<State> {
+async function buyAction(exchange: IExchange, state: State): Promise<State> {
     const volume = await buy({
-        kraken,
+        exchange,
         baseSymbol: EnvVars.BASE_SYMBOL,
         quoteInvestingAmount: EnvVars.QUOTE_INVESTING_AMOUNT,
         quoteSymbol: EnvVars.QUOTE_SYMBOL,
@@ -49,7 +50,7 @@ async function buyAction(kraken: IKraken, state: State): Promise<State> {
 
 
 export async function stopAndWithdrawConditionally(
-    kraken: IKraken,
+    exchange: IExchange,
     interval: NodeJS.Timeout,
     task: ScheduledTask,
     stateStore: IStateStore
@@ -63,7 +64,7 @@ export async function stopAndWithdrawConditionally(
 
             if (EnvVars.ENABLE_WITHDRAWAL && state.volume > 0) {
                 await sleep(60); // wait until order is filled
-                await withdrawAction(kraken, state);
+                await withdrawAction(exchange, state);
                 await stateStore.delete();
             }
         }
@@ -76,9 +77,9 @@ async function sleep(seconds: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 }
 
-async function withdrawAction(kraken: IKraken, state: State): Promise<State> {
+async function withdrawAction(exchange: IExchange, state: State): Promise<State> {
     await withdraw({
-        kraken,
+        exchange,
         volume: state.volume,
         baseSymbol: EnvVars.BASE_SYMBOL,
         withdrawalAddress: EnvVars.WITHDRAWAL_ADDRESS
@@ -88,12 +89,12 @@ async function withdrawAction(kraken: IKraken, state: State): Promise<State> {
 }
 
 
-export async function withdrawConditionally(kraken: IKraken, stateStore: IStateStore): Promise<void> {
+export async function withdrawConditionally(exchange: IExchange, stateStore: IStateStore): Promise<void> {
     try {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         let state = (await stateStore.get())!;
         if (state.volume > 0) {
-            state = await withdrawAction(kraken, state);
+            state = await withdrawAction(exchange, state);
             await stateStore.upsert(state);
         }
     } catch (error) {

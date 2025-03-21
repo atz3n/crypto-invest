@@ -1,22 +1,11 @@
 ###################################################################################################
-# GET PRODUCTION DEPENDENCIES
-###################################################################################################
-
-FROM node:16.15.1-alpine3.16 as deps-collector
-
-# Copy meta data
-COPY package.json .
-COPY yarn.lock .
-
-# Install dependencies
-RUN yarn install --prod --frozen-lockfile
-
-
-###################################################################################################
 # BUILD PROJECT
 ###################################################################################################
 
-FROM node:16.15.1-alpine3.16 as builder
+FROM node:18.20-alpine3.18 AS builder
+
+# get init service
+RUN apk update && apk add dumb-init
 
 # Copy meta files
 COPY .eslintignore .
@@ -24,12 +13,10 @@ COPY .eslintrc.json .
 COPY tsconfig.json .
 COPY package.json .
 COPY yarn.lock .
-
-# Create a dummy test file to get the correct folder structure compiled
-RUN mkdir test && touch test/index.ts && echo "console.log('dummy')" > test/index.ts
+COPY prepare.typecheck.js .
 
 # Install dependencies
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --network-timeout 600000
 
 # Copy source files
 COPY src ./src
@@ -42,19 +29,18 @@ RUN yarn build
 # BUILD IMAGE
 ###################################################################################################
 
-FROM node:16.15.1-alpine3.16 as runner
+FROM node:18.20-alpine3.18 AS runner
 
-# Set working directory
+# Setup execution environment
 WORKDIR /usr/app/
+USER node
+ENV NODE_ENV=production
 
-# Copy meta data
-COPY package.json .
+# get init process so node doesn't run on PID 1
+COPY --from=builder /usr/bin/dumb-init /usr/bin/dumb-init
 
-# Copy production dependencies
-COPY --from=deps-collector node_modules ./node_modules
-
-# Copy compiled files
-COPY --from=builder dist/src ./dist/src
+# Copy distribution files
+COPY --chown=node:node --from=builder dist ./dist
 
 # Set start command
-CMD [ "yarn", "start" ]
+CMD ["dumb-init", "node", "./dist/main.js"]

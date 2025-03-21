@@ -1,9 +1,23 @@
 # Asset Cost Averaging
 
-The Asset Cost Averaging Bot aims to implement the [Dollar Cost Averaging](https://www.investopedia.com/terms/d/dollarcostaveraging.asp) investment strategy, with the difference that it supports [all available trading pairs](https://support.kraken.com/hc/en-us/articles/202944246-All-available-currencies-and-trading-pairs-on-Kraken) that Kraken offers.
+The Asset Cost Averaging Bot aims to implement the [Dollar Cost Averaging](https://www.investopedia.com/terms/d/dollarcostaveraging.asp) investment strategy, with the difference that it supports all trading pairs an exchange offers.
 
 A simple [description](https://intelligent.schwab.com/article/) of Dollar Cost Averaging is:
 > Dollar cost averaging is the practice of investing a fixed dollar amount on a regular basis, regardless of the share price.
+
+Currently implemented exchanges:
+- [Kraken](https://www.kraken.com)
+  - API key
+    - [How to create an API key](https://support.kraken.com/hc/en-us/articles/360000919966-How-to-create-an-API-key)
+    - Permissions
+      - buy -> *query funds*, *create and modify orders*
+      - withdraw -> *withdraw funds*
+- [Binance](https://www.binance.com/en)
+  - API key
+    - [How to create an API Key](https://www.binance.com/en/support/faq/detail/360002502072)
+    - Permissions
+      - buy -> *Enable Reading*, *Enable Spot & Margin Trading*
+      - withdraw -> *Enable Withdrawals*
 
 
 ## General
@@ -12,12 +26,12 @@ The bot has a core functionality, an optional functionality and can be used in t
 
 The bot uses [node-cron](https://www.npmjs.com/package/node-cron) to schedule the buy actions. Have a look [here](https://crontab.guru) to configure your schedule easily. To buy the asset in a short period of time, the bot uses the *market* type when placing the order and the current *ask* price to calculate the volume. This lets the price amount vary a bit, so that i.e. an investment of $100 may result in an investment of $100.10 or $99.90.
 
-The second, optional functionality is to withdraw the purchased asset to store it in a cold wallet. Even though Kraken is (imho) one of the safest exchanges out there, you should follow the golden rule in the crypto world: *"Not your keys, not your cryptos"*. If you enable withdrawal in finite mode, the bot will withdraw your asset after the last buy action. To withdraw your asset in infinite mode, a withdrawal schedule is used, which can also be configured with a cron schedule expression.
+The second, optional functionality is to withdraw the purchased asset to store it in a cold wallet. In general you should follow the golden rule in the crypto world: *"Not your keys, not your cryptos"*. If you enable withdrawal in finite mode, the bot will withdraw your asset after the last buy action. To withdraw your asset in infinite mode, a withdrawal schedule is used, which can also be configured with a cron schedule expression.
 
 
 ## Getting Started
 
-There are three ways to get the bot running. Each way requires you to have an API key pair created. Have a look at the [How to](https://support.kraken.com/hc/en-us/articles/360000919966-How-to-generate-an-API-key-pair-) to get support. For buying assets you need to give permission to *query funds* and to *create and modify orders*. For withdrawing assets you also need to give permission to *withdraw funds*.
+There are three ways to get the bot running. Each way requires you to have an API key pair created. Have a look at the *How to create an API key* link of the corresponding exchange to get support. For buying assets you need to give permissions listed in the buy permissions. For withdrawing assets you also need to give permissions listed in the withdraw permissions.
 
 
 ### 1. Docker Compose
