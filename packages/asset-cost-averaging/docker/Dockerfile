@@ -21,6 +21,9 @@ RUN yarn install --frozen-lockfile --network-timeout 600000
 # Copy source files
 COPY src ./src
 
+# Remove unit tests
+RUN find ./src -type d -name "__test__" -exec rm -rf {} +
+
 # Build app
 RUN yarn build
 

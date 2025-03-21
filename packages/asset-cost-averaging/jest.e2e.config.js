@@ -1,6 +1,5 @@
 module.exports = {
     testEnvironment: "node",
-    verbose: true,
     roots: [
         "<rootDir>/test"
     ],
@@ -10,10 +9,5 @@ module.exports = {
     setupFilesAfterEnv: [
         "./test/setup.ts"
     ],
-    coverageReporters: ["text"],
-    // coverageReporters: ["text", "json", "html"],
-    collectCoverageFrom: [
-        "src/**/*.ts",
-    ],
-    coverageDirectory: "coverage",
+    verbose: true
 };
