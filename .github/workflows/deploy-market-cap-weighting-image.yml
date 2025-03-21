@@ -1,4 +1,4 @@
-name: build market-cap-weighting image
+name: deploy market-cap-weighting image
 
 on:
   workflow_dispatch:
@@ -6,26 +6,21 @@ on:
       version:
         description: Docker image version tag
         required: false
-  push:
-    branches:
-      - main
-    paths:
-      - packages/market-cap-weighting/**
 
 jobs:
   test-market-cap-weighting:
-    uses: ./.github/workflows/test-project.yml
+    uses: ./.github/workflows/zz_test-project.yml
     secrets: inherit
     with:
       project_dir: packages/market-cap-weighting
 
-  build-market-cap-weighting:
+  deploy-market-cap-weighting:
     needs:
       - test-market-cap-weighting
-    uses: ./.github/workflows/build-image.yml
+    uses: ./.github/workflows/zz_deploy-image.yml
     secrets: inherit
     with:
       project_dir: packages/market-cap-weighting
-      registry_name: ghcr.io/atz3n/kraken-invest
+      registry_name: ghcr.io/atz3n/crypto-invest
       image_name: market-cap-weighting
       version: ${{ github.event.inputs.version }}
