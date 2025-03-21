@@ -1,4 +1,4 @@
-import { IKraken, KRAKEN_PRIVATE_METHOD, KRAKEN_PUBLIC_METHOD } from "@atz3n/kraken-invest-common";
+import { ExchangeMock } from "../../src/exchange/ExchangeMock";
 import { buyConditionally, initStateStore } from "../../src/helpers";
 import { EnvVars } from "../../src/lib/EnvVars";
 import { createStateStore } from "../../src/storage/state/stateStoreFactory";
@@ -7,73 +7,63 @@ import { StorageType } from "../../src/storage/StorageType";
 import { config } from "../config";
 
 
-// mock kraken lib
-let stepCounter = 1;
-class KrakenMock implements IKraken {
-    request<T>(
-        method: KRAKEN_PRIVATE_METHOD | KRAKEN_PUBLIC_METHOD,
-        params?: Record<string, string> | undefined
-    ): Promise<T> {
-        try {
-            // 1. check balance of quote asset
-            if (stepCounter === 1 && method === KRAKEN_PRIVATE_METHOD.Balance) {
-                stepCounter++;
-
-                return <Promise<T>> <unknown> {
-                    result: {
-                        ZEUR: 100
-                    }
-                };
-            // 2. get price
-            } else if (stepCounter === 2 && method === KRAKEN_PUBLIC_METHOD.Ticker) {
-                stepCounter++;
-                expect(params?.pair).toEqual("XXBTZEUR");
-
-                return <Promise<T>> <unknown> {
-                    result: {
-                        XXBTZEUR: {
-                            a: [ 5 ]
-                        }
-                    }
-                };
-            // 3. set order
-            } else if (stepCounter === 3 && method === KRAKEN_PRIVATE_METHOD.AddOrder) {
-                expect(params?.ordertype).toEqual("market");
-                expect(params?.type).toEqual("buy");
-                expect(params?.pair).toEqual("XXBTZEUR");
-                expect(params?.volume).toEqual("2.00000");
-
-                return <Promise<T>> <unknown> {
-                    result: {
-                        txid: [ "someId" ]
-                    }
-                };
-            } else {
-                fail("Wrong step order");
-            }
-        } catch (error) {
-            console.error((<Error> error).message);
-            throw error;
-        }
-    }
-}
-
-
 if (!config.skipTests.includes("buy")) {
     let stateStore: StateStoreInMemory;
+    let callTracker = "";
+    let _error = false;
 
     beforeEach(async () => {
         stateStore = <StateStoreInMemory> createStateStore(StorageType.IN_MEMORY);
         await initStateStore(stateStore);
-        stepCounter = 1;
-        EnvVars.NUMBER_OF_BUYS = 0;
+        callTracker = "";
+        _error = false;
     });
 
 
     it("should successfully buy", async () => {
-        await buyConditionally(new KrakenMock(), stateStore);
+        const exchange = new ExchangeMock({
+            getBalanceCb: (symbol) => {
+                try {
+                    callTracker += "getBalanceCb ";
+                    expect(symbol).toEqual(EnvVars.QUOTE_SYMBOL);
+                    return 30;
+                } catch (error) {
+                    console.log((<Error> error).message);
+                    _error = true;
+                    throw new Error();
+                }
+            },
+            getPriceCb: (baseSymbol, quoteSymbol) => {
+                try {
+                    callTracker += "getPriceCb ";
+                    expect(baseSymbol).toEqual(EnvVars.BASE_SYMBOL);
+                    expect(quoteSymbol).toEqual(EnvVars.QUOTE_SYMBOL);
+                    return 10;
+                } catch (error) {
+                    console.log((<Error> error).message);
+                    _error = true;
+                    throw new Error();
+                }
+            },
+            setOrderCb: (baseSymbol, quoteSymbol, volume) => {
+                try {
+                    callTracker += "setOrderCb ";
+                    expect(baseSymbol).toEqual(EnvVars.BASE_SYMBOL);
+                    expect(quoteSymbol).toEqual(EnvVars.QUOTE_SYMBOL);
+                    expect(Number(volume)).toEqual(EnvVars.QUOTE_INVESTING_AMOUNT / 10);
+                    return "";
+                } catch (error) {
+                    console.log((<Error> error).message);
+                    _error = true;
+                    throw new Error();
+                }
+            }
+        });
+        await buyConditionally(exchange, stateStore);
 
-        expect(stateStore.store[0].volume).toEqual(2);
+        expect(callTracker.trim()).toEqual("getBalanceCb getPriceCb setOrderCb");
+        expect(_error).toEqual(false);
+        expect(stateStore.store[0].volume).toEqual(1);
         expect(stateStore.store[0].counter).toEqual(1);
     });
 
@@ -81,9 +71,22 @@ if (!config.skipTests.includes("buy")) {
     it("should not buy in case the counter exceeded the number of buys", async () => {
         EnvVars.NUMBER_OF_BUYS = 2;
         stateStore.store[0].counter = 3;
-        await buyConditionally(new KrakenMock(), stateStore);
+        const exchange = new ExchangeMock({
+            getBalanceCb: (symbol) => {
+                try {
+                    callTracker += "getBalanceCb ";
+                    return 30;
+                } catch (error) {
+                    console.log((<Error> error).message);
+                    _error = true;
+                    throw new Error();
+                }
+            }
+        });
+        await buyConditionally(exchange, stateStore);
 
-        expect(stepCounter).toEqual(1);
+        expect(callTracker.trim()).toEqual("");
+        expect(_error).toEqual(false);
     });
 } else {
     test("dummy", () => {

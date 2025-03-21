@@ -10,7 +10,7 @@ on:
 
 jobs:
   test-market-cap-weighting:
-    uses: ./.github/workflows/test-project.yml
+    uses: ./.github/workflows/zz_test-project.yml
     secrets: inherit
     with:
       project_dir: packages/market-cap-weighting

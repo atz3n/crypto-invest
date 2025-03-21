@@ -9,28 +9,30 @@
         "lint:fix": "eslint ./ --fix --ext .ts",
         "test": "RUN_CONTEXT=test jest",
         "test:coverage": "yarn test --coverage",
-        "build": "rm -rf ./dist && tsc",
+        "build": "yarn build:typecheck && yarn build:bundle",
+        "build:typecheck": "rm -rf tsconfig.typecheck.json && node prepare.typecheck.js && tsc --noEmit -p tsconfig.typecheck.json && rm -rf tsconfig.typecheck.json",
+        "build:bundle": "rm -rf dist && esbuild src/main.ts --platform=node --bundle --tree-shaking=true --outfile=./dist/main.js",
         "start": "node ./dist/src/main.js"
     },
     "devDependencies": {
+        "@atz3n/kraken-invest-common": "^1.1.0",
+        "@binance/connector-typescript": "^0.3.15",
         "@types/jest": "^28.1.6",
         "@types/node": "^15.0.3",
         "@types/node-cron": "^3.0.2",
         "@typescript-eslint/eslint-plugin": "^5.7.0",
         "@typescript-eslint/parser": "^5.7.0",
+        "dotenv": "^10.0.0",
+        "esbuild": "^0.25.1",
         "eslint": "^7.26.0",
         "jest": "^28.1.3",
         "jest-cli": "^28.1.3",
+        "mongoose": "^6.5.0",
+        "node-cron": "^3.0.1",
         "ts-jest": "^28.0.7",
         "ts-node-dev": "^1.1.6",
         "tsc": "^2.0.3",
-        "typescript": "4.6.4"
-    },
-    "dependencies": {
-        "@atz3n/kraken-invest-common": "^1.1.0",
-        "dotenv": "^10.0.0",
-        "mongoose": "^6.5.0",
-        "node-cron": "^3.0.1",
-        "uuid": "^8.3.2"
+        "typescript": "4.6.4",
+        "uuid": "^11.1.0"
     }
 }

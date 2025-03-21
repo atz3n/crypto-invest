@@ -2,7 +2,7 @@
     "editor.inlayHints.enabled": "offUnlessPressed",
     "editor.tabSize": 4,
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true
+        "source.fixAll.eslint": "explicit"
     },
     "git.ignoreLimitWarning": true,
     "files.associations": {
