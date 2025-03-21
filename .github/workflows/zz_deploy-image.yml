@@ -20,7 +20,7 @@ env:
   LATEST_TAG: latest
 
 jobs:
-  build-image:
+  deploy-image:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
