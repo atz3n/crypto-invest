@@ -9,8 +9,7 @@ import { KrakenExchange } from "./exchange/KrakenExchange";
 import { createStateStore } from "./storage/state/stateStoreFactory";
 import { StorageType } from "./storage/StorageType";
 
-// const apiKey = "MBZKRZAFl5EJMi9wIVxWfJ1ImECbiJxpvaQWNdCVHnF5ed97BSrd5a8QRYRhK9Nr";
-    // const apiSecret = "OESZrgc96QhefL2F8a5nCACGrYua1KwQYf46V3gjnspFCcaDSlgk2B1G4F6Elyws";
+
 async function main() {
     initLogger({
         level: "info",
