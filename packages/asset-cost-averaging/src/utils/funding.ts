@@ -11,8 +11,9 @@ interface WithdrawParams {
 
 export async function withdraw(params: WithdrawParams): Promise<void> {
     const { exchange, volume, baseSymbol, withdrawalAddress } = params;
-
+    console.log("HERE1");
     const balance = await exchange.getBalance(baseSymbol);
+    console.log("HERE2");
     if (balance === 0) {
         logger.info(`No ${baseSymbol} to withdraw`);
         return;
