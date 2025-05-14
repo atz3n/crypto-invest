@@ -98,6 +98,7 @@ export async function withdrawConditionally(exchange: IExchange, stateStore: ISt
             await stateStore.upsert(state);
         }
     } catch (error) {
+        console.log(error);
         logger.error((<Error> error).message);
     }
 }
