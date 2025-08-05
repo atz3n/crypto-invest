@@ -24,6 +24,7 @@ export class EnvVars {
     public static ENABLE_WITHDRAWAL = false;
     public static CRON_WITHDRAW_SCHEDULE = "";
     public static WITHDRAWAL_ADDRESS = "";
+    public static WITHDRAWAL_NETWORK = "";
     public static ENABLE_FILE_LOGGING = false;
     public static MONGO_DB_URL = "";
 
@@ -75,6 +76,9 @@ export class EnvVars {
         }, "0 4 1 * *");
         this.setVar("WITHDRAWAL_ADDRESS", (envVar) => {
             this.WITHDRAWAL_ADDRESS = String(envVar);
+        }, "");
+        this.setVar("WITHDRAWAL_NETWORK", (envVar) => {
+            this.WITHDRAWAL_NETWORK = String(envVar);
         }, "");
         if (this.ENABLE_WITHDRAWAL && this.WITHDRAWAL_ADDRESS === "") {
             throw new Error("WITHDRAWAL_ADDRESS must be defined");

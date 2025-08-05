@@ -6,11 +6,12 @@ interface WithdrawParams {
     exchange: IExchange;
     volume: number;
     baseSymbol: string;
-    withdrawalAddress: string
+    withdrawalAddress: string;
+    withdrawalNetwork: string;
 }
 
 export async function withdraw(params: WithdrawParams): Promise<void> {
-    const { exchange, volume, baseSymbol, withdrawalAddress } = params;
+    const { exchange, volume, baseSymbol, withdrawalAddress, withdrawalNetwork } = params;
 
     const balance = await exchange.getBalance(baseSymbol);
     if (balance === 0) {
@@ -18,7 +19,7 @@ export async function withdraw(params: WithdrawParams): Promise<void> {
         return;
     }
     const withdrawAmount = Math.min(balance, volume);
-    const id = await exchange.withdraw(baseSymbol, String(withdrawAmount), withdrawalAddress);
+    const id = await exchange.withdraw(baseSymbol, String(withdrawAmount), withdrawalAddress, withdrawalNetwork);
 
     logger.info(`Set withdrawal ${id} to withdraw ${withdrawAmount} ${baseSymbol}`);
 }

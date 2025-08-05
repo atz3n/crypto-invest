@@ -40,7 +40,7 @@ export class KrakenExchange implements IExchange {
     }
 
 
-    public async withdraw(symbol: string, volume: string, address: string): Promise<string> {
+    public async withdraw(symbol: string, volume: string, address: string, network?: string): Promise<string> {
         const withdraw = await this.options.client.request<{ result: { refid: string }}>(
             KRAKEN_PRIVATE_METHOD.Withdraw,
             {

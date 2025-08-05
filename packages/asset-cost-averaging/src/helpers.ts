@@ -82,7 +82,8 @@ async function withdrawAction(exchange: IExchange, state: State): Promise<State>
         exchange,
         volume: state.volume,
         baseSymbol: EnvVars.BASE_SYMBOL,
-        withdrawalAddress: EnvVars.WITHDRAWAL_ADDRESS
+        withdrawalAddress: EnvVars.WITHDRAWAL_ADDRESS,
+        withdrawalNetwork: EnvVars.WITHDRAWAL_NETWORK
     });
     state.volume = 0;
     return state;

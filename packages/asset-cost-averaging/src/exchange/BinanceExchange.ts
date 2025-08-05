@@ -43,8 +43,13 @@ export class BinanceExchange implements IExchange {
     }
 
 
-    public async withdraw(symbol: string, volume: string, address: string): Promise<string> {
-        const withdraw = await this.options.client.withdraw(symbol, address, Number(volume));
+    public async withdraw(symbol: string, volume: string, address: string, network?: string): Promise<string> {
+        const withdraw = await this.options.client.withdraw(
+            symbol,
+            address,
+            Number(volume),
+            network ? { network } : undefined
+        );
         return withdraw.id;
     }
 }
