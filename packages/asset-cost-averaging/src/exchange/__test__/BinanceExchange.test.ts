@@ -70,9 +70,28 @@ if (!config.skipTests.includes("binance")) {
     it("should call the correct library functions to set an order", async () => {
         const exchange = new BinanceExchange({
             client: <Spot> <unknown> {
+                exchangeInformation: (params: { symbol: string }) => {
+                    try {
+                        callTracker += "exchangeInformation ";
+                        expect(params.symbol).toEqual("BTCEUR");
+                        return {
+                            symbols: [{
+                                filters: [{
+                                    filterType: "LOT_SIZE",
+                                    stepSize: "100",
+                                    minQty: "100"
+                                }]
+                            }]
+                        };
+                    } catch (error) {
+                        console.log((<Error> error).message);
+                        _error = true;
+                        throw new Error();
+                    }
+                },
                 newOrder: async (symbol: string, side: Side, type: OrderType, options: {quantity: number}) => {
                     try {
-                        callTracker = "newOrder ";
+                        callTracker += "newOrder ";
                         expect(symbol).toEqual("BTCEUR");
                         expect(side).toEqual(Side.BUY);
                         expect(type).toEqual(OrderType.MARKET);
@@ -91,7 +110,7 @@ if (!config.skipTests.includes("binance")) {
 
         const id = await exchange.setOrder("BTC", "EUR", "100");
 
-        expect(callTracker.trim()).toEqual("newOrder");
+        expect(callTracker.trim()).toEqual("exchangeInformation newOrder");
         expect(_error).toEqual(false);
         expect(id).toEqual("123");
     });
