@@ -1,11 +1,11 @@
 import { ConsoleTransport, FileTransport, initLogger, Kraken, logger } from "@atz3n/kraken-invest-common";
 import { Spot } from "@binance/connector-typescript";
 import { schedule } from "node-cron";
-import { buyConditionally, initStateStore, stopAndWithdrawConditionally, withdrawConditionally } from "./helpers";
 import { BinanceExchange } from "./exchange/BinanceExchange";
-import { EnvVars } from "./lib/EnvVars";
 import { IExchange } from "./exchange/IExchange";
 import { KrakenExchange } from "./exchange/KrakenExchange";
+import { buyConditionally, initStateStore, stopAndWithdrawConditionally, withdrawConditionally } from "./helpers";
+import { EnvVars } from "./lib/EnvVars";
 import { createStateStore } from "./storage/state/stateStoreFactory";
 import { StorageType } from "./storage/StorageType";
 
