@@ -3,7 +3,8 @@ import { IExchange } from "./IExchange";
 
 
 interface Options {
-    client: Spot
+    client: Spot;
+    maxDecimals: number;
 }
 
 interface LotSizeFilter {
@@ -87,7 +88,7 @@ export class BinanceExchange implements IExchange {
         const withdraw = await this.options.client.withdraw(
             symbol,
             address,
-            Number(volume),
+            Number(Number(volume).toFixed(this.options.maxDecimals)),
             network ? { network } : undefined
         );
         return withdraw.id;

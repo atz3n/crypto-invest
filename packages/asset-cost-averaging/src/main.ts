@@ -39,6 +39,7 @@ async function main() {
 
     if (EnvVars.EXCHANGE === "binance") {
         exchange = new BinanceExchange({
+            maxDecimals: 8,
             client: new Spot(
                 EnvVars.API_KEY,
                 EnvVars.PRIVATE_KEY
@@ -62,6 +63,5 @@ async function main() {
 
     logger.info("Done. Asset Cost Averaging Bot started.");
 }
-
 
 main();

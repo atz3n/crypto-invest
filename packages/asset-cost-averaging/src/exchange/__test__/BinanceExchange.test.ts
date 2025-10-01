@@ -15,6 +15,7 @@ if (!config.skipTests.includes("binance")) {
 
     it("should call the correct library functions to get the balance", async () => {
         const exchange = new BinanceExchange({
+            maxDecimals: 8,
             client: <Spot> <unknown> {
                 userAsset: async (params: { asset: string }) => {
                     try {
@@ -42,6 +43,7 @@ if (!config.skipTests.includes("binance")) {
 
     it("should call the correct library functions to get the price", async () => {
         const exchange = new BinanceExchange({
+            maxDecimals: 8,
             client: <Spot> <unknown> {
                 symbolOrderBookTicker: async (params: { symbol: string }) => {
                     try {
@@ -69,6 +71,7 @@ if (!config.skipTests.includes("binance")) {
 
     it("should call the correct library functions to set an order", async () => {
         const exchange = new BinanceExchange({
+            maxDecimals: 8,
             client: <Spot> <unknown> {
                 exchangeInformation: (params: { symbol: string }) => {
                     try {
@@ -118,6 +121,7 @@ if (!config.skipTests.includes("binance")) {
 
     it("should call the correct library functions to withdraw", async () => {
         const exchange = new BinanceExchange({
+            maxDecimals: 8,
             client: <Spot> <unknown> {
                 withdraw: async (coin: string, address: string, volume: number) => {
                     try {
@@ -138,6 +142,36 @@ if (!config.skipTests.includes("binance")) {
         });
 
         const id = await exchange.withdraw("BTC", "100", "myAddress");
+
+        expect(callTracker.trim()).toEqual("withdraw");
+        expect(_error).toEqual(false);
+        expect(id).toEqual("123");
+    });
+
+
+    it("should strip the volume to the correct decimals", async () => {
+        const exchange = new BinanceExchange({
+            maxDecimals: 2,
+            client: <Spot> <unknown> {
+                withdraw: async (coin: string, address: string, volume: number) => {
+                    try {
+                        callTracker = "withdraw ";
+                        expect(coin).toEqual("BTC");
+                        expect(volume).toEqual(100.12);
+                        expect(address).toEqual("myAddress");
+                        return {
+                            id: "123"
+                        };
+                    } catch (error) {
+                        console.log((<Error> error).message);
+                        _error = true;
+                        throw new Error();
+                    }
+                },
+            }
+        });
+
+        const id = await exchange.withdraw("BTC", "100.123456", "myAddress");
 
         expect(callTracker.trim()).toEqual("withdraw");
         expect(_error).toEqual(false);
